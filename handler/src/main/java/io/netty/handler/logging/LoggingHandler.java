@@ -314,7 +314,7 @@ public class LoggingHandler extends ChannelDuplexHandler {
             StringBuilder buf = new StringBuilder(chStr.length() + 1 + eventName.length() + 2 + 10 + 1 + 2 + rows * 80);
 
             buf.append(chStr).append(' ').append(eventName).append(": ").append(length).append('B');
-            ByteBufUtil.appendMultiLineHexDump(buf, msg);
+            ByteBufUtil.appendPrettyHexDump(buf, msg);
 
             return buf.toString();
         }
@@ -339,7 +339,7 @@ public class LoggingHandler extends ChannelDuplexHandler {
 
             buf.append(chStr).append(' ').append(eventName).append(": ")
                .append(msgStr).append(", ").append(length).append('B');
-            ByteBufUtil.appendMultiLineHexDump(buf, content);
+            ByteBufUtil.appendPrettyHexDump(buf, content);
 
             return buf.toString();
         }

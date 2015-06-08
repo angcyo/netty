@@ -675,25 +675,25 @@ public final class ByteBufUtil {
     }
 
     /**
-     * Returns a multi-line hexadecimal dump of the specified {@link ByteBuf}.
+     * Returns a multi-line hexadecimal dump of the specified {@link ByteBuf} that is easy to read by humans.
      */
-    public static String multiLineHexDump(ByteBuf buffer) {
+    public static String prettyHexDump(ByteBuf buffer) {
         int length = buffer.readableBytes();
         if (length == 0) {
             return StringUtil.EMPTY_STRING;
         } else {
             int rows = length / 16 + (length % 15 == 0? 0 : 1) + 4;
             StringBuilder buf = new StringBuilder(rows * 80);
-            appendMultiLineHexDump(buf, buffer);
+            appendPrettyHexDump(buf, buffer);
             return buf.toString();
         }
     }
 
     /**
-     * Appends the prettifies multi-line hexadecimal dump of the specified {@link ByteBuf} to the specified
-     * {@link StringBuilder}.
+     * Appends the prettified multi-line hexadecimal dump of the specified {@link ByteBuf} to the specified
+     * {@link StringBuilder} that is easy to read by humans.
      */
-    public static void appendMultiLineHexDump(StringBuilder dump, ByteBuf buf) {
+    public static void appendPrettyHexDump(StringBuilder dump, ByteBuf buf) {
         dump.append(
                 NEWLINE + "         +-------------------------------------------------+" +
                 NEWLINE + "         |  0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f |" +
