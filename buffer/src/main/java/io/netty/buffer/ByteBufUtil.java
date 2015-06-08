@@ -678,13 +678,20 @@ public final class ByteBufUtil {
      * Returns a multi-line hexadecimal dump of the specified {@link ByteBuf} that is easy to read by humans.
      */
     public static String prettyHexDump(ByteBuf buffer) {
-        int length = buffer.readableBytes();
+        return prettyHexDump(buffer, buffer.readerIndex(), buffer.readableBytes());
+    }
+
+    /**
+     * Returns a multi-line hexadecimal dump of the specified {@link ByteBuf} that is easy to read by humans,
+     * starting at the given {@code offset} using the given {@code length}.
+     */
+    public static String prettyHexDump(ByteBuf buffer, int offset, int length) {
         if (length == 0) {
             return StringUtil.EMPTY_STRING;
         } else {
             int rows = length / 16 + (length % 15 == 0? 0 : 1) + 4;
             StringBuilder buf = new StringBuilder(rows * 80);
-            appendPrettyHexDump(buf, buffer);
+            appendPrettyHexDump(buf, buffer, offset, length);
             return buf.toString();
         }
     }
@@ -694,14 +701,29 @@ public final class ByteBufUtil {
      * {@link StringBuilder} that is easy to read by humans.
      */
     public static void appendPrettyHexDump(StringBuilder dump, ByteBuf buf) {
+        appendPrettyHexDump(dump, buf, buf.readerIndex(), buf.readableBytes());
+    }
+
+    /**
+     * Appends the prettified multi-line hexadecimal dump of the specified {@link ByteBuf} to the specified
+     * {@link StringBuilder} that is easy to read by humans, starting at the given {@code offset} using
+     * the given {@code length}.
+     */
+    public static void appendPrettyHexDump(StringBuilder dump, ByteBuf buf, int offset, int length) {
+        if (offset < 0 || length  > checkNotNull(buf, "buf").capacity() - offset) {
+            throw new IndexOutOfBoundsException(
+                    "expected: " + "0 <= offset(" + offset + ") <= offset + length(" + length
+                                                + ") <= " + "buf.capacity(" + buf.capacity() + ')');
+        }
+        if (length == 0) {
+            return;
+        }
         dump.append(
                 NEWLINE + "         +-------------------------------------------------+" +
                 NEWLINE + "         |  0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f |" +
                 NEWLINE + "+--------+-------------------------------------------------+----------------+");
 
-        final int startIndex = buf.readerIndex();
-        final int endIndex = buf.writerIndex();
-        final int length = endIndex - startIndex;
+        final int startIndex = offset;
         final int fullRows = length >>> 4;
         final int remainder = length & 0xF;
 
